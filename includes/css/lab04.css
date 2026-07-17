@@ -1,0 +1,13 @@
+.w100 { width: 100%; }
+
+.img-contain {
+    max-width: 40%;
+}
+
+.imgCoverFit { 
+    object-fit: cover;
+}
+
+.inline-block {
+    display: inline-block;
+}
