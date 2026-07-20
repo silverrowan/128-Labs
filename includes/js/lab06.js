@@ -10,8 +10,7 @@ const getPokeData = (endpoint, limit, offset) => {
 
     return fetch(`${url}/${endpoint}/${limitString}${offsetString}`)
         .then( response => response.json() )
-        .then( data => { console.log(data);
-            return data } )
+        .then( data => { return data } )
         .catch( error => console.log(error.message));
 }
 
@@ -32,13 +31,11 @@ const makeSelectTypeList = async () => {
 const getPokemonTable = async () => {
     const allPokemonJSON = await getPokeData ( "pokemon", 1500);
     allPokemon = allPokemonJSON.results;
-    console.log( allPokemon );
     count = 0;
     let addPokemon = false;
 
     for ( let i=1 ; i <= allPokemon.length ; i++ ) {
         const currPokemon = await getPokeData ( `pokemon/${i}`);
-        console.log( currPokemon );
 
         let selectedType = $(typeOptions).val().toLowerCase().trim();
         let currentTypes = currPokemon.types;
@@ -50,7 +47,6 @@ const getPokemonTable = async () => {
         }
         if ( addPokemon ) {  
             addTableRow( currPokemon, typeList );
-            console.log( allPokemon[i] );
         }
         if ( count === 10 ) { break; }
     }
@@ -61,19 +57,16 @@ getPokemonTable();
 
 // const listType = () =>
 const listType = ( currentTypes, selectedType ) => {
-    let typeList;
+    let typeList ="";
     for ( let i=0 ; i < currentTypes.length ; i++ ) {
         let currentTypeI = currentTypes[i].type.name.toLowerCase().trim()
-    if ( selectedType != currentTypeI ) {
-        typeList += currentTypeI;
-        continue;
-    } else {
         typeList += currentTypeI;
         typeList += ", "
-        addPokemon = true;
+        if ( selectedType == currentTypeI ) { addPokemon = true; }
     }
-    return typeList;
-    }
+    let list = typeList.slice(0,-2);
+    
+    return list;
 }
 
 const addTableRow = ( currPokemon, typeList ) => {
