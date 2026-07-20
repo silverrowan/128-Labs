@@ -1,10 +1,14 @@
 // "use strict";
 
 //Gets information from pokeAPIv2, returns an array
-const getPokeData = (endpoint, limit) => {
+const getPokeData = (endpoint, limit, offset) => {
     const url = "https://pokeapi.co/api/v2";
+    let offsetString = ''
+    let limitString = ''
+    if (offset) { offsetString = `&offset=${offset}`; }
+    if (limit) { limitString = `?limit=${limit}`; }
 
-    return fetch(`${url}/${endpoint}/?limit=${limit}`)
+    return fetch(`${url}/${endpoint}/${limitString}${offsetString}`)
         .then( response => response.json() )
         .then( data => { console.log(data);
             return data } )
@@ -25,23 +29,66 @@ const makeSelectTypeList = async () => {
     }
 }
 
-const makePokemonTableRow = async () => {
-    // rawResults = await getPokeData( "pokemon", 100 ); 
-    // do i have to parse through ALL pokemon until i find ones that match conditions?
-    // ...if so i'll need to figure out pagination :/
-    let string;
-
-    pokemonHTML = `
-    <tr>
-        <td><img>${link}</img></td>
-        <td>${pokeName}</td>
-        <td>${type}</td>
-        <td>${Height}</td>
-        <td>${Weight}</td>
-    </tr>
-    `
-    $("#pokeTable").append( pokemonHTML );
-}
-
 makeSelectTypeList();
+
+const getPokemonTable = async () => {
+    const allPokemonJSON = await getPokeData ( "pokemon", 1500);
+    allPokemon = allPokemonJSON.results;
+    console.log( allPokemon );
+    count = 0;
+    let pokemonHTML = '';
+    for ( i=1 ; i <= 3 ; i++ ) {
+        const currPokemon = await getPokeData ( `pokemon/${i}`);
+        console.log( currPokemon );
+        
+        let link = currPokemon.sprites.front_default;
+        let pokeName = currPokemon.name;
+        let type = ""//currPokemon[types]; //NOTE WILL NEED FOR LOOP
+        let Height = currPokemon.height;
+        let Weight = currPokemon.weight;
+
+        pokemonHTML = `
+        <tr>
+            <td><img src="${link}"></img></td>
+            <td>${pokeName}</td>
+            <td>${type}</td>
+            <td>${Height}</td>
+            <td>${Weight}</td>
+        </tr>
+        `
+        $("#pokeTable").append( pokemonHTML );        
+
+        console.log( allPokemon[i] );
+
+
+    //     // for ( i=0 ; i < allPokemon.length ; i++ ) {
+
+            //if dropdown = all then add first 10
+            //check if type matches
+            //if type matches add as row
+            //if added , increase count by 1. once count => 10 break
+        }
+
+        // pokemonHTML = `
+        // <tr>
+        //     <td><img>${link}</img></td>
+        //     <td>${pokeName}</td>
+        //     <td>${type}</td>
+        //     <td>${Height}</td>
+        //     <td>${Weight}</td>
+        // </tr>
+        // `
+        // $("#pokeTable").append( pokemonHTML );
+    // }
+    // makePokemonTableRow();
+
+
+
+
+}
+getPokemonTable();
+
+
+// makePokemonTableRow();
+
 // makePokemonTableRow();
