@@ -29,63 +29,70 @@ const makeSelectTypeList = async () => {
     }
 }
 
-makeSelectTypeList();
-
 const getPokemonTable = async () => {
     const allPokemonJSON = await getPokeData ( "pokemon", 1500);
     allPokemon = allPokemonJSON.results;
     console.log( allPokemon );
     count = 0;
-    let pokemonHTML = '';
+    let addPokemon = false;
 
-    for ( i=1 ; i <= 3 ; i++ ) {
+    for ( let i=1 ; i <= allPokemon.length ; i++ ) {
         const currPokemon = await getPokeData ( `pokemon/${i}`);
         console.log( currPokemon );
 
-        let addPokemon = false;
         let selectedType = $(typeOptions).val().toLowerCase().trim();
         let currentTypes = currPokemon.types;
-        let typeList = '';
- 
 
-        for ( i=0 ; i < currentTypes.length ; i++ ) {
-            let currentTypeI = currentTypes[i].type.name.toLowerCase().trim()
-            if ( selectedType != currentTypeI ) {
-                typeList += currentTypeI;
-                continue;}
-            else {
-                typeList += currentTypeI;
-                addPokemnon = true;
-            }
+        let typeList = listType( currentTypes, selectedType );
+
+        if ( selectedType == "all" ) { 
+            addPokemon = true; 
         }
-
-        if ( selectedType == "all" ) { addPokemon = true; }
-
-        if ( addPokemon ) {        
-            let link = currPokemon.sprites.front_default;
-            let pokeName = currPokemon.name;
-            let type = typeList;
-            let Height = currPokemon.height;
-            let Weight = currPokemon.weight;
-            count++;
-
-            pokemonHTML = `
-            <tr>
-                <td><img src="${link}"></img></td>
-                <td>${pokeName}</td>
-                <td>${type}</td>
-                <td>${Height}</td>
-                <td>${Weight}</td>
-            </tr>
-            `
-            $("#pokeTable").append( pokemonHTML );        
-
+        if ( addPokemon ) {  
+            addTableRow( currPokemon, typeList );
             console.log( allPokemon[i] );
         }
         if ( count === 10 ) { break; }
     }
 }
 
-
+makeSelectTypeList();
 getPokemonTable();
 
+// const listType = () =>
+const listType = ( currentTypes, selectedType ) => {
+    let typeList;
+    for ( let i=0 ; i < currentTypes.length ; i++ ) {
+        let currentTypeI = currentTypes[i].type.name.toLowerCase().trim()
+    if ( selectedType != currentTypeI ) {
+        typeList += currentTypeI;
+        continue;
+    } else {
+        typeList += currentTypeI;
+        typeList += ", "
+        addPokemon = true;
+    }
+    return typeList;
+    }
+}
+
+const addTableRow = ( currPokemon, typeList ) => {
+    let pokemonHTML = '';
+    let link = currPokemon.sprites.front_default;
+    let pokeName = currPokemon.name;
+
+    let Height = currPokemon.height;
+    let Weight = currPokemon.weight;
+    count++;
+
+    pokemonHTML = `
+    <tr>
+        <td><img src="${link}"></img></td>
+        <td>${pokeName}</td>
+        <td>${typeList}</td>
+        <td>${Height}</td>
+        <td>${Weight}</td>
+    </tr>
+    `
+    $("#pokeTable").append( pokemonHTML );  
+}
