@@ -37,58 +37,55 @@ const getPokemonTable = async () => {
     console.log( allPokemon );
     count = 0;
     let pokemonHTML = '';
+
     for ( i=1 ; i <= 3 ; i++ ) {
         const currPokemon = await getPokeData ( `pokemon/${i}`);
         console.log( currPokemon );
-        
-        let link = currPokemon.sprites.front_default;
-        let pokeName = currPokemon.name;
-        let type = ""//currPokemon[types]; //NOTE WILL NEED FOR LOOP
-        let Height = currPokemon.height;
-        let Weight = currPokemon.weight;
 
-        pokemonHTML = `
-        <tr>
-            <td><img src="${link}"></img></td>
-            <td>${pokeName}</td>
-            <td>${type}</td>
-            <td>${Height}</td>
-            <td>${Weight}</td>
-        </tr>
-        `
-        $("#pokeTable").append( pokemonHTML );        
+        let addPokemon = false;
+        let selectedType = $(typeOptions).val().toLowerCase().trim();
+        let currentTypes = currPokemon.types;
+        let typeList = '';
+ 
 
-        console.log( allPokemon[i] );
-
-
-    //     // for ( i=0 ; i < allPokemon.length ; i++ ) {
-
-            //if dropdown = all then add first 10
-            //check if type matches
-            //if type matches add as row
-            //if added , increase count by 1. once count => 10 break
+        for ( i=0 ; i < currentTypes.length ; i++ ) {
+            let currentTypeI = currentTypes[i].type.name.toLowerCase().trim()
+            if ( selectedType != currentTypeI ) {
+                typeList += currentTypeI;
+                continue;}
+            else {
+                typeList += currentTypeI;
+                addPokemnon = true;
+            }
         }
 
-        // pokemonHTML = `
-        // <tr>
-        //     <td><img>${link}</img></td>
-        //     <td>${pokeName}</td>
-        //     <td>${type}</td>
-        //     <td>${Height}</td>
-        //     <td>${Weight}</td>
-        // </tr>
-        // `
-        // $("#pokeTable").append( pokemonHTML );
-    // }
-    // makePokemonTableRow();
+        if ( selectedType == "all" ) { addPokemon = true; }
 
+        if ( addPokemon ) {        
+            let link = currPokemon.sprites.front_default;
+            let pokeName = currPokemon.name;
+            let type = typeList;
+            let Height = currPokemon.height;
+            let Weight = currPokemon.weight;
+            count++;
 
+            pokemonHTML = `
+            <tr>
+                <td><img src="${link}"></img></td>
+                <td>${pokeName}</td>
+                <td>${type}</td>
+                <td>${Height}</td>
+                <td>${Weight}</td>
+            </tr>
+            `
+            $("#pokeTable").append( pokemonHTML );        
 
-
+            console.log( allPokemon[i] );
+        }
+        if ( count === 10 ) { break; }
+    }
 }
+
+
 getPokemonTable();
 
-
-// makePokemonTableRow();
-
-// makePokemonTableRow();
