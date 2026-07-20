@@ -31,14 +31,24 @@ const makeSelectTypeList = async () => {
 const getPokemonTable = async () => {
     const allPokemonJSON = await getPokeData ( "pokemon", 1500);
     allPokemon = allPokemonJSON.results;
+    console.log( allPokemon );
+    
     count = 0;
     let addPokemon = false;
 
     for ( let i=1 ; i <= allPokemon.length ; i++ ) {
-        const currPokemon = await getPokeData ( `pokemon/${i}`);
+        let currPokemon;
+        try{
+            currPokemon = await getPokeData ( `pokemon/${i}`);
+        } catch (e) { 
+            console.log( e );
+            continue;
+        } //finally { continue; }
 
         let selectedType = $(typeOptions).val().toLowerCase().trim();
         let currentTypes = currPokemon.types;
+
+
 
         let typeList = listType( currentTypes, selectedType );
 
@@ -51,6 +61,12 @@ const getPokemonTable = async () => {
         if ( count === 10 ) { break; }
     }
 }
+$(document).ready( function() {
+    $("#typeOptions").change( function() {
+        getPokemonTable();
+    })
+})
+
 
 makeSelectTypeList();
 getPokemonTable();
